@@ -12,8 +12,14 @@ type LeaderboardRow = {
   rank: number;
   user_id: string;
   username: string;
-  total_distance: number;
+  value?: number | null;
+  total_distance?: number | null;
 };
+
+function finiteNumber(value: unknown, fallback = 0): number {
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : fallback;
+}
 
 async function getTeamDistanceKm(
   supabase: SupabaseClient,
@@ -27,7 +33,7 @@ async function getTeamDistanceKm(
     throw error;
   }
 
-  return Number(data ?? 0);
+  return finiteNumber(data);
 }
 
 async function getUserDistanceKm(
@@ -44,7 +50,7 @@ async function getUserDistanceKm(
     throw error;
   }
 
-  return Number(data ?? 0);
+  return finiteNumber(data);
 }
 
 async function getLeaderboardPreview(
@@ -95,7 +101,7 @@ async function getLeaderboardPreview(
       username: row.username,
       displayName: profile?.display_name ?? null,
       avatarUrl: profile?.avatar_url ?? null,
-      value: Number(row.total_distance),
+      value: finiteNumber(row.value ?? row.total_distance),
     };
   });
 

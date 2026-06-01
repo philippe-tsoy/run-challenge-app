@@ -5,6 +5,8 @@ create or replace function evaluate_team_milestones(
 )
 returns void
 language plpgsql
+security definer
+set search_path = public
 as $$
 declare
     v_total numeric;

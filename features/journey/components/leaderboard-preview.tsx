@@ -27,7 +27,7 @@ export function LeaderboardPreview({ journey }: LeaderboardPreviewProps) {
               </span>
             </span>
             <span className="text-muted-foreground tabular-nums">
-              {entry.value.toFixed(1)} km
+              {Number(entry.value ?? 0).toFixed(1)} km
             </span>
           </li>
         ))}

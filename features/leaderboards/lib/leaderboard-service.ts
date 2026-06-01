@@ -105,7 +105,7 @@ export async function getLeaderboard(
             displayName: null,
             avatarUrl: null,
           },
-      value: Number(row.value),
+      value: Number.isFinite(Number(row.value)) ? Number(row.value) : 0,
       achievedAt: row.achieved_at,
     };
   });

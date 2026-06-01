@@ -71,6 +71,8 @@ create or replace function create_feed_event(
 )
 returns void
 language plpgsql
+security definer
+set search_path = public
 as $$
 begin
 
@@ -105,6 +107,8 @@ create or replace function create_notification(
 )
 returns void
 language plpgsql
+security definer
+set search_path = public
 as $$
 begin
 
@@ -337,6 +341,8 @@ execute function handle_reaction_created();
 create or replace function update_user_streak()
 returns trigger
 language plpgsql
+security definer
+set search_path = public
 as $$
 declare
     v_last_date date;
@@ -418,6 +424,8 @@ create or replace function unlock_badge(
 )
 returns void
 language plpgsql
+security definer
+set search_path = public
 as $$
 declare
     v_badge uuid;
@@ -678,6 +686,8 @@ create or replace function audit_action(
 )
 returns void
 language plpgsql
+security definer
+set search_path = public
 as $$
 begin
 

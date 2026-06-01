@@ -97,8 +97,8 @@ Only use `https://mcp.vercel.com` (not third-party “vercel-mcp” npm servers 
 
 ### Option A — Dashboard (recommended)
 
-1. Push the repo to GitHub/GitLab/Bitbucket.
-2. [vercel.com/new](https://vercel.com/new) → Import repository.
+1. Repo: [github.com/philippe-tsoy/run-challenge-app](https://github.com/philippe-tsoy/run-challenge-app) (`main` branch).
+2. [vercel.com/new](https://vercel.com/new) → Import repository (or Vercel → **run-app** → Settings → **Git** → Connect).
 3. Framework preset: **Next.js** (auto-detected).
 4. **Environment variables** (Production + Preview):
 

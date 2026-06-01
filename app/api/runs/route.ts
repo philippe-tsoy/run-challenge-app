@@ -78,11 +78,16 @@ export async function POST(request: NextRequest) {
     return Response.json(run, { status: 201 });
   } catch (error) {
     if (error instanceof Error) {
-      if (error.message.includes("PACE")) {
+      const message = error.message.toLowerCase();
+
+      if (message.includes("pace")) {
         return businessRuleError(error.message);
       }
       if ((error as Error & { code?: string }).code === "NOT_CHALLENGE_MEMBER") {
         return forbiddenError("You are not a member of this challenge");
+      }
+      if ((error as Error & { code?: string }).code === "PACE_OUT_OF_RANGE") {
+        return businessRuleError(error.message);
       }
     }
 
