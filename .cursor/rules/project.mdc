@@ -1,0 +1,33 @@
+---
+description: Run Challenge PWA — project entry point for Cursor agents
+globs:
+alwaysApply: true
+---
+
+# Run Challenge PWA
+
+## Spec package (start here)
+
+Before implementing features, read:
+
+1. `docs/spec/MASTER_SPEC.md` — product rules
+2. `docs/spec/CURSOR_RULES.md` — implementation constraints
+3. Relevant `docs/spec/PHASE_*.md` for the current task
+
+Index: `docs/spec/README.md`  
+Consistency audit: `docs/spec/CONSISTENCY.md`
+
+## Authority
+
+When docs conflict, **`docs/spec/` wins** over `docs/business-rules.md`.
+
+## Database
+
+- Schema: `database/schema.sql`
+- Align migrations with `docs/spec/DATA_MODEL.md` (e.g. `runs.is_valid`, hard delete policy)
+
+## Constants (must match DB codes)
+
+- `lib/constants/journey-nodes.ts`
+- `lib/constants/badges.ts`
+- `features/feed/types/feed-event.ts`
