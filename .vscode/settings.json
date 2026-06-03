@@ -1,0 +1,63 @@
+{
+  "task.allowAutomaticTasks": "on",
+  "terminal.integrated.profiles.windows": {
+    "PowerShell": {
+      "source": "PowerShell",
+      "icon": "terminal-powershell"
+    },
+    "Run App · UI": {
+      "path": "powershell.exe",
+      "args": [
+        "-NoExit",
+        "-Command",
+        "Set-Location '${workspaceFolder}'; npm.cmd run dev:ui"
+      ],
+      "icon": "browser",
+      "color": "terminal.ansiCyan",
+      "overrideName": true
+    },
+    "Run App · Backend": {
+      "path": "powershell.exe",
+      "args": [
+        "-NoExit",
+        "-Command",
+        "Set-Location '${workspaceFolder}'; npm.cmd run dev:backend"
+      ],
+      "icon": "server-process",
+      "color": "terminal.ansiMagenta",
+      "overrideName": true
+    }
+  },
+  "terminal.integrated.profiles.osx": {
+    "Run App · UI": {
+      "path": "bash",
+      "args": ["-l", "-c", "cd '${workspaceFolder}' && npm run dev:ui; exec bash"],
+      "icon": "browser",
+      "color": "terminal.ansiCyan",
+      "overrideName": true
+    },
+    "Run App · Backend": {
+      "path": "bash",
+      "args": ["-l", "-c", "cd '${workspaceFolder}' && npm run dev:backend; exec bash"],
+      "icon": "server-process",
+      "color": "terminal.ansiMagenta",
+      "overrideName": true
+    }
+  },
+  "terminal.integrated.profiles.linux": {
+    "Run App · UI": {
+      "path": "bash",
+      "args": ["-l", "-c", "cd '${workspaceFolder}' && npm run dev:ui; exec bash"],
+      "icon": "browser",
+      "color": "terminal.ansiCyan",
+      "overrideName": true
+    },
+    "Run App · Backend": {
+      "path": "bash",
+      "args": ["-l", "-c", "cd '${workspaceFolder}' && npm run dev:backend; exec bash"],
+      "icon": "server-process",
+      "color": "terminal.ansiMagenta",
+      "overrideName": true
+    }
+  }
+}

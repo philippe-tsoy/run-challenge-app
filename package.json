@@ -4,6 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
+    "dev:ui": "next dev --turbopack",
+    "dev:backend": "node scripts/dev-backend.mjs",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
