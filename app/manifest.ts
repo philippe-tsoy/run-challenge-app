@@ -7,8 +7,8 @@ export default function manifest(): MetadataRoute.Manifest {
     description: "Story-driven running challenge for your fellowship",
     start_url: "/app",
     display: "standalone",
-    background_color: "#0a0a0a",
-    theme_color: "#0a0a0a",
+    background_color: "#f4faf6",
+    theme_color: "#2d6a4f",
     orientation: "portrait",
     icons: [
       {
