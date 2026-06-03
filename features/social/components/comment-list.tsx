@@ -8,9 +8,10 @@ import type { CommentDTO } from "@/lib/types/social";
 type CommentListProps = {
   comments: CommentDTO[];
   onChanged: () => void;
+  readOnly?: boolean;
 };
 
-export function CommentList({ comments, onChanged }: CommentListProps) {
+export function CommentList({ comments, onChanged, readOnly = false }: CommentListProps) {
   const { data: session } = useSession();
 
   async function handleDelete(commentId: string) {
@@ -40,7 +41,7 @@ export function CommentList({ comments, onChanged }: CommentListProps) {
               </time>
             </div>
             <p className="mt-2 text-sm whitespace-pre-wrap">{comment.body}</p>
-            {canDelete ? (
+            {canDelete && !readOnly ? (
               <Button
                 type="button"
                 variant="ghost"

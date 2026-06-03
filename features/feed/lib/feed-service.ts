@@ -1,7 +1,10 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 import {
+  fetchMilestoneImageUrls,
+  fetchRunCommentsBatch,
   fetchRunEnrichments,
+  fetchRunReactionsSummaries,
   mapFeedEventRow,
   type FeedEventRow,
 } from "@/features/feed/lib/mapper";
@@ -17,6 +20,11 @@ const RUN_EVENT_TYPES = new Set<string>([
   FEED_EVENT_TYPES.RUN_CREATED,
   FEED_EVENT_TYPES.RUN_UPDATED,
   FEED_EVENT_TYPES.RUN_DELETED,
+]);
+
+const SOCIAL_RUN_EVENT_TYPES = new Set<string>([
+  FEED_EVENT_TYPES.RUN_CREATED,
+  FEED_EVENT_TYPES.RUN_UPDATED,
 ]);
 
 export async function listFeedEvents(
@@ -40,6 +48,8 @@ export async function listFeedEvents(
     .from("feed_events")
     .select(FEED_SELECT)
     .eq("challenge_id", query.challengeId)
+    .neq("event_type", FEED_EVENT_TYPES.REACTION_CREATED)
+    .neq("event_type", FEED_EVENT_TYPES.COMMENT_CREATED)
     .order("created_at", { ascending: false })
     .limit(query.limit + 1);
 
@@ -66,13 +76,57 @@ export async function listFeedEvents(
     )
     .map((row) => row.entity_id as string);
 
-  const runEnrichments = await fetchRunEnrichments(supabase, runIds);
+  const socialRunIds = page
+    .filter(
+      (row) =>
+        row.entity_id &&
+        row.entity_type === "run" &&
+        SOCIAL_RUN_EVENT_TYPES.has(row.event_type),
+    )
+    .map((row) => row.entity_id as string);
+
+  const milestoneNodeIds = page
+    .filter(
+      (row) =>
+        row.entity_id &&
+        row.entity_type === "journey_node" &&
+        row.event_type === FEED_EVENT_TYPES.MILESTONE_REACHED,
+    )
+    .map((row) => row.entity_id as string);
+
+  const [runEnrichments, reactionSummaries, commentsByRun, milestoneImages] =
+    await Promise.all([
+      fetchRunEnrichments(supabase, runIds),
+      fetchRunReactionsSummaries(supabase, socialRunIds, userId),
+      fetchRunCommentsBatch(supabase, socialRunIds),
+      fetchMilestoneImageUrls(supabase, milestoneNodeIds),
+    ]);
 
   const events = page.map((row) => {
     const runId =
       row.entity_type === "run" && row.entity_id ? row.entity_id : undefined;
 
-    return mapFeedEventRow(row, runId ? runEnrichments.get(runId) : undefined);
+    const event = mapFeedEventRow(
+      row,
+      runId ? runEnrichments.get(runId) : undefined,
+    );
+
+    if (runId && SOCIAL_RUN_EVENT_TYPES.has(row.event_type)) {
+      event.payload.reactions = reactionSummaries.get(runId);
+      event.payload.comments = commentsByRun.get(runId) ?? [];
+    }
+
+    if (
+      row.event_type === FEED_EVENT_TYPES.MILESTONE_REACHED &&
+      row.entity_id
+    ) {
+      const imageUrl = milestoneImages.get(row.entity_id);
+      if (imageUrl) {
+        event.payload.imageUrl = imageUrl;
+      }
+    }
+
+    return event;
   });
 
   return {

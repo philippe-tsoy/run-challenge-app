@@ -1,34 +1,50 @@
 import Link from "next/link";
 
+import { FeedMilestoneImage } from "@/features/feed/components/feed-milestone-image";
+import { FeedRunSocial } from "@/features/feed/components/feed-run-social";
 import { FEED_EVENT_TYPES } from "@/features/feed/types/feed-event";
 import type { FeedEventDTO } from "@/lib/types/feed";
 
 type FeedEventCardProps = {
   event: FeedEventDTO;
+  currentUserId?: string | null;
+  readOnly?: boolean;
 };
 
 function actorLabel(event: FeedEventDTO): string {
   return event.actor?.displayName ?? event.actor?.username ?? "Someone";
 }
 
-function runLink(runId: string | undefined) {
-  if (!runId) {
-    return null;
-  }
-
+function runEditLink(runId: string) {
   return (
     <Link
       href={`/app/runs/${runId}/edit`}
       className="text-primary text-sm font-medium underline-offset-4 hover:underline"
     >
-      View run
+      Edit
     </Link>
   );
 }
 
-export function FeedEventCard({ event }: FeedEventCardProps) {
+const SOCIAL_RUN_EVENT_TYPES = new Set<string>([
+  FEED_EVENT_TYPES.RUN_CREATED,
+  FEED_EVENT_TYPES.RUN_UPDATED,
+]);
+
+export function FeedEventCard({
+  event,
+  currentUserId,
+  readOnly = false,
+}: FeedEventCardProps) {
   const payload = event.payload;
   const runId = typeof payload.runId === "string" ? payload.runId : undefined;
+  const showRunSocial = runId && SOCIAL_RUN_EVENT_TYPES.has(event.eventType);
+  const canEditRun =
+    Boolean(runId) &&
+    SOCIAL_RUN_EVENT_TYPES.has(event.eventType) &&
+    Boolean(currentUserId) &&
+    event.actor?.id === currentUserId;
+  const isMilestone = event.eventType === FEED_EVENT_TYPES.MILESTONE_REACHED;
 
   let title = "Activity";
   let description = "";
@@ -49,17 +65,6 @@ export function FeedEventCard({ event }: FeedEventCardProps) {
     case FEED_EVENT_TYPES.RUN_DELETED:
       title = `${actorLabel(event)} deleted a run`;
       description = `${Number(payload.distanceKm ?? payload.distance_km ?? 0).toFixed(2)} km removed`;
-      break;
-    case FEED_EVENT_TYPES.COMMENT_CREATED:
-      title = `${actorLabel(event)} commented`;
-      description =
-        typeof payload.commentPreview === "string"
-          ? payload.commentPreview
-          : "New comment on a run";
-      break;
-    case FEED_EVENT_TYPES.REACTION_CREATED:
-      title = `${actorLabel(event)} reacted`;
-      description = `Reaction: ${String(payload.reactionType ?? payload.reaction ?? "like")}`;
       break;
     case FEED_EVENT_TYPES.MILESTONE_REACHED:
       title =
@@ -95,7 +100,9 @@ export function FeedEventCard({ event }: FeedEventCardProps) {
   }
 
   return (
-    <article className="bg-card rounded-xl border p-4 shadow-sm">
+    <article className="bg-card overflow-hidden rounded-xl border shadow-sm">
+      {isMilestone ? <FeedMilestoneImage payload={payload} /> : null}
+      <div className="p-4">
       <div className="flex items-start justify-between gap-3">
         <div>
           <p className="font-medium">{title}</p>
@@ -103,11 +110,24 @@ export function FeedEventCard({ event }: FeedEventCardProps) {
             <p className="text-muted-foreground mt-1 text-sm">{description}</p>
           ) : null}
         </div>
-        <time className="text-muted-foreground shrink-0 text-xs">
-          {new Date(event.createdAt).toLocaleString()}
-        </time>
+        <div className="flex shrink-0 flex-col items-end gap-1">
+          {canEditRun && runId ? runEditLink(runId) : null}
+          <time className="text-muted-foreground text-xs">
+            {new Date(event.createdAt).toLocaleString()}
+          </time>
+        </div>
       </div>
-      {runId ? <div className="mt-3">{runLink(runId)}</div> : null}
+
+      {showRunSocial ? (
+        <FeedRunSocial
+          runId={runId}
+          challengeId={event.challengeId}
+          reactions={payload.reactions}
+          comments={payload.comments}
+          readOnly={readOnly}
+        />
+      ) : null}
+      </div>
     </article>
   );
 }

@@ -238,7 +238,7 @@ One reaction per user per run (changeable):
 |------|-------|
 | `like` | 👍 |
 | `fire` | 🔥 |
-| `water` | 💧 |
+| `water` | 💦 |
 | `ice` | 🧊 |
 
 ---

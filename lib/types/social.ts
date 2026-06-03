@@ -10,6 +10,13 @@ export const REACTION_TYPES: ReactionType[] = [
   "ice",
 ];
 
+export const REACTION_EMOJI: Record<ReactionType, string> = {
+  like: "👍",
+  fire: "🔥",
+  water: "💦",
+  ice: "❄️",
+};
+
 export type CommentDTO = {
   id: string;
   body: string;

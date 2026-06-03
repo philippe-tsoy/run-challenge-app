@@ -118,6 +118,7 @@ async function createMilestoneFeedEvent(
       kmMarker: milestone.kmMarker,
       title: milestone.title,
       message: milestone.message,
+      imageUrl: milestone.imageUrl,
     },
   });
 

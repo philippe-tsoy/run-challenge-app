@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { useSession } from "@/features/auth/hooks/use-session";
 import { FeedEventCard } from "@/features/feed/components/feed-event-card";
 import { useFeed } from "@/features/feed/hooks/use-feed";
 import type { ChallengeDTO } from "@/lib/types/challenge";
@@ -11,6 +12,7 @@ type FeedListProps = {
 };
 
 export function FeedList({ challengeId, challenge }: FeedListProps) {
+  const { data: session } = useSession();
   const { data, isLoading, error, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useFeed(challengeId);
 
@@ -50,7 +52,12 @@ export function FeedList({ challengeId, challenge }: FeedListProps) {
       ) : null}
 
       {events.map((event) => (
-        <FeedEventCard key={event.id} event={event} />
+        <FeedEventCard
+          key={event.id}
+          event={event}
+          currentUserId={session?.user?.id ?? null}
+          readOnly={isHistorical}
+        />
       ))}
 
       {hasNextPage ? (

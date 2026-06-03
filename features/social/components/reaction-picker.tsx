@@ -9,27 +9,23 @@ import {
   type ReactionsSummary,
 } from "@/features/social/lib/api";
 import {
+  REACTION_EMOJI,
   REACTION_TYPES,
   type ReactionType,
 } from "@/lib/types/social";
-
-const REACTION_LABELS: Record<ReactionType, string> = {
-  like: "👍",
-  fire: "🔥",
-  water: "💧",
-  ice: "❄️",
-};
 
 type ReactionPickerProps = {
   runId: string;
   reactions: ReactionsSummary;
   onChanged: () => void;
+  disabled?: boolean;
 };
 
 export function ReactionPicker({
   runId,
   reactions,
   onChanged,
+  disabled = false,
 }: ReactionPickerProps) {
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -69,11 +65,11 @@ export function ReactionPicker({
               type="button"
               variant={isActive ? "default" : "outline"}
               size="sm"
-              disabled={isSaving}
+              disabled={disabled || isSaving}
               onClick={() => handleSelect(type)}
               aria-pressed={isActive}
             >
-              {REACTION_LABELS[type]} {count > 0 ? count : ""}
+              {REACTION_EMOJI[type]} {count}
             </Button>
           );
         })}

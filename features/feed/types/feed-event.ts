@@ -220,6 +220,8 @@ export interface MilestoneReachedPayload {
   title: string;
 
   message: string;
+
+  imageUrl?: string;
 }
 
 export interface MilestoneReachedEvent

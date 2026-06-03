@@ -3,8 +3,19 @@ import {
   type FeedActor,
   type FeedEventType,
 } from "@/features/feed/types/feed-event";
+import { resolveJourneyImagePath } from "@/lib/constants/journey-images";
 import type { FeedEventDTO } from "@/lib/types/feed";
+import {
+  REACTION_TYPES,
+  toCommentDTO,
+  type CommentDTO,
+  type ReactionType,
+  type ReactionsSummary,
+} from "@/lib/types/social";
 import { computePaceMinPerKm } from "@/lib/validators/run";
+
+const PROFILE_SELECT =
+  "profiles(id, username, email, display_name, avatar_url)";
 
 const FEED_EVENT_TYPE_SET = new Set<string>(Object.values(FEED_EVENT_TYPES));
 
@@ -176,4 +187,116 @@ export async function fetchRunEnrichments(
   }
 
   return enrichments;
+}
+
+function emptyReactionsSummary(): ReactionsSummary {
+  return {
+    counts: Object.fromEntries(
+      REACTION_TYPES.map((type) => [type, 0]),
+    ) as Record<ReactionType, number>,
+    userReaction: null,
+  };
+}
+
+export async function fetchRunReactionsSummaries(
+  supabase: import("@supabase/supabase-js").SupabaseClient,
+  runIds: string[],
+  userId: string,
+): Promise<Map<string, ReactionsSummary>> {
+  if (!runIds.length) {
+    return new Map();
+  }
+
+  const { data, error } = await supabase
+    .from("reactions")
+    .select("run_id, reaction_type, user_id")
+    .in("run_id", runIds);
+
+  if (error) {
+    throw error;
+  }
+
+  const summaries = new Map<string, ReactionsSummary>();
+
+  for (const runId of runIds) {
+    summaries.set(runId, emptyReactionsSummary());
+  }
+
+  for (const row of data ?? []) {
+    const type = row.reaction_type as ReactionType;
+    if (!REACTION_TYPES.includes(type)) {
+      continue;
+    }
+
+    const summary = summaries.get(row.run_id);
+    if (!summary) {
+      continue;
+    }
+
+    summary.counts[type] += 1;
+    if (row.user_id === userId) {
+      summary.userReaction = type;
+    }
+  }
+
+  return summaries;
+}
+
+export async function fetchRunCommentsBatch(
+  supabase: import("@supabase/supabase-js").SupabaseClient,
+  runIds: string[],
+): Promise<Map<string, CommentDTO[]>> {
+  if (!runIds.length) {
+    return new Map();
+  }
+
+  const { data, error } = await supabase
+    .from("comments")
+    .select(`id, run_id, body, created_at, ${PROFILE_SELECT}`)
+    .in("run_id", runIds)
+    .order("created_at", { ascending: true });
+
+  if (error) {
+    throw error;
+  }
+
+  const commentsByRun = new Map<string, CommentDTO[]>();
+
+  for (const row of data ?? []) {
+    const runId = row.run_id as string;
+    const list = commentsByRun.get(runId) ?? [];
+    list.push(toCommentDTO(row));
+    commentsByRun.set(runId, list);
+  }
+
+  return commentsByRun;
+}
+
+export async function fetchMilestoneImageUrls(
+  supabase: import("@supabase/supabase-js").SupabaseClient,
+  journeyNodeIds: string[],
+): Promise<Map<string, string | null>> {
+  if (!journeyNodeIds.length) {
+    return new Map();
+  }
+
+  const { data, error } = await supabase
+    .from("journey_nodes")
+    .select("id, name, image_url")
+    .in("id", journeyNodeIds);
+
+  if (error) {
+    throw error;
+  }
+
+  const images = new Map<string, string | null>();
+
+  for (const node of data ?? []) {
+    images.set(
+      node.id,
+      resolveJourneyImagePath(node.image_url, node.name),
+    );
+  }
+
+  return images;
 }
