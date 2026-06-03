@@ -135,6 +135,25 @@ export async function listRuns(
   };
 }
 
+export async function getLatestRunForUser(
+  supabase: SupabaseClient,
+  userId: string,
+): Promise<RunDTO | null> {
+  const { data, error } = await supabase
+    .from("runs")
+    .select(RUN_SELECT)
+    .eq("user_id", userId)
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  if (error) {
+    throw error;
+  }
+
+  return data ? toRunDTO(data) : null;
+}
+
 async function recordIdempotentOperation(
   supabase: SupabaseClient,
   userId: string,

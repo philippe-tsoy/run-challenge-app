@@ -2,7 +2,11 @@
 
 import { useBadgeCatalog } from "@/features/badges/hooks/use-badges";
 
-export function BadgeGallery() {
+type BadgeGalleryProps = {
+  hideIntro?: boolean;
+};
+
+export function BadgeGallery({ hideIntro = false }: BadgeGalleryProps) {
   const { data, isLoading, error } = useBadgeCatalog();
 
   if (isLoading) {
@@ -23,9 +27,11 @@ export function BadgeGallery() {
 
   return (
     <section className="space-y-4">
-      <p className="text-muted-foreground text-sm">
-        Badges are global and persist across challenges.
-      </p>
+      {hideIntro ? null : (
+        <p className="text-muted-foreground text-sm">
+          Badges are global and persist across challenges.
+        </p>
+      )}
 
       <div className="grid gap-3 sm:grid-cols-2">
         {badges.map((badge) => (
