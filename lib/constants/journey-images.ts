@@ -99,3 +99,14 @@ export function resolveJourneyImagePath(
 
   return imageUrl;
 }
+
+export function getMilestoneImageFromPayload(
+  payload: Record<string, unknown>,
+): string | null {
+  const imageUrl =
+    typeof payload.imageUrl === "string" ? payload.imageUrl : null;
+  const nodeName =
+    typeof payload.nodeName === "string" ? payload.nodeName : "";
+
+  return resolveJourneyImagePath(imageUrl, nodeName);
+}

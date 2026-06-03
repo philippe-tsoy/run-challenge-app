@@ -1,7 +1,8 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useId, useMemo, useState } from "react";
+import { Footprints } from "lucide-react";
+import { useEffect, useId, useMemo, useRef, useState } from "react";
 
 import {
   buildCurvedSegmentPath,
@@ -30,6 +31,52 @@ function nodePosition(node: JourneyNodeDTO) {
 
 function toPoint(node: JourneyNodeDTO) {
   return { x: node.mapX, y: node.mapY };
+}
+
+const LEG_PROGRESS_ANIMATION_MS = 1200;
+
+function useAnimatedLegProgress(
+  targetPercent: number,
+  legKey: string | null,
+): number {
+  const [animatedPercent, setAnimatedPercent] = useState(0);
+  const prevLegKey = useRef<string | null>(null);
+
+  useEffect(() => {
+    if (!legKey) {
+      setAnimatedPercent(0);
+      prevLegKey.current = null;
+      return;
+    }
+
+    const legChanged = prevLegKey.current !== legKey;
+    prevLegKey.current = legKey;
+
+    if (legChanged) {
+      setAnimatedPercent(0);
+
+      const prefersReducedMotion = window.matchMedia(
+        "(prefers-reduced-motion: reduce)",
+      ).matches;
+
+      if (prefersReducedMotion) {
+        setAnimatedPercent(targetPercent);
+        return;
+      }
+
+      const frame = requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          setAnimatedPercent(targetPercent);
+        });
+      });
+
+      return () => cancelAnimationFrame(frame);
+    }
+
+    setAnimatedPercent(targetPercent);
+  }, [targetPercent, legKey]);
+
+  return animatedPercent;
 }
 
 export function JourneyMap({
@@ -76,6 +123,12 @@ export function JourneyMap({
     legTotalKm && legTotalKm > 0
       ? Math.min(100, Math.max(0, progressToNext * 100))
       : 0;
+
+  const legKey = current && next ? `${current.id}:${next.id}` : null;
+  const animatedLegProgress = useAnimatedLegProgress(
+    legProgressPercent,
+    legKey,
+  );
 
   useEffect(() => {
     if (!previewNode) {
@@ -325,18 +378,38 @@ export function JourneyMap({
 
       {next && kmToNext !== null && current && legTotalKm !== null ? (
         <div className="border-border/60 space-y-2 border-t px-4 py-3">
-          <div
-            className="bg-muted h-2.5 overflow-hidden rounded-full"
-            role="progressbar"
-            aria-valuenow={legProgressPercent}
-            aria-valuemin={0}
-            aria-valuemax={100}
-            aria-label={`Progress from ${current.name} to ${next.name}`}
-          >
+          <div className="relative pt-7">
             <div
-              className="h-full rounded-full bg-gradient-to-r from-amber-600 to-amber-400 transition-[width] duration-500"
-              style={{ width: `${legProgressPercent}%` }}
-            />
+              className="bg-muted relative h-2.5 overflow-visible rounded-full"
+              role="progressbar"
+              aria-valuenow={legProgressPercent}
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-label={`Progress from ${current.name} to ${next.name}`}
+            >
+              <div
+                className="pointer-events-none absolute bottom-full z-10 mb-0.5 -translate-x-1/2 transition-[left] ease-out motion-reduce:transition-none"
+                style={{
+                  left: `${animatedLegProgress}%`,
+                  transitionDuration: `${LEG_PROGRESS_ANIMATION_MS}ms`,
+                }}
+                aria-hidden
+              >
+                <span className="flex size-7 items-center justify-center rounded-full border border-amber-500/40 bg-amber-50 shadow-sm dark:bg-amber-950/80">
+                  <Footprints
+                    className="size-4 text-amber-700 dark:text-amber-300"
+                    strokeWidth={2.25}
+                  />
+                </span>
+              </div>
+              <div
+                className="h-full rounded-full bg-gradient-to-r from-amber-600 to-amber-400 transition-[width] ease-out motion-reduce:transition-none"
+                style={{
+                  width: `${animatedLegProgress}%`,
+                  transitionDuration: `${LEG_PROGRESS_ANIMATION_MS}ms`,
+                }}
+              />
+            </div>
           </div>
           <p className="text-center text-sm font-medium">
             <span className="text-foreground">{kmToNext.toFixed(1)} km</span>

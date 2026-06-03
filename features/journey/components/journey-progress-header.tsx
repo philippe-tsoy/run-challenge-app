@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import type { JourneyDTO } from "@/lib/types/journey";
 
 type JourneyProgressHeaderProps = {
@@ -15,11 +17,19 @@ export function JourneyProgressHeader({ journey }: JourneyProgressHeaderProps) {
   return (
     <header className="space-y-3">
       <div className="flex items-start justify-between gap-3">
-        <div>
+        <div className="min-w-0 flex-1">
           <p className="text-muted-foreground text-sm">Team progress</p>
-          <h1 className="text-2xl font-semibold tracking-tight">
-            {journey.challengeName}
-          </h1>
+          <div className="mt-0.5 flex flex-wrap items-baseline gap-x-3 gap-y-1">
+            <h1 className="text-2xl font-semibold tracking-tight">
+              {journey.challengeName}
+            </h1>
+            <Link
+              href={`/app/challenges/${journey.challengeId}`}
+              className="text-primary shrink-0 text-sm font-medium underline-offset-4 hover:underline"
+            >
+              Challenge details & runs
+            </Link>
+          </div>
         </div>
         {journey.isActive ? (
           <span className="bg-primary text-primary-foreground rounded-full px-2 py-0.5 text-xs font-medium">

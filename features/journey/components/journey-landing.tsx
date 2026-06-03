@@ -3,6 +3,7 @@
 import Link from "next/link";
 
 import { useCurrentChallenge } from "@/features/challenges/hooks/use-challenges";
+import { JourneyLocationBackground } from "@/features/journey/components/journey-location-background";
 import { JourneyMap } from "@/features/journey/components/journey-map";
 import { JourneyProgressHeader } from "@/features/journey/components/journey-progress-header";
 import { LeaderboardPreview } from "@/features/journey/components/leaderboard-preview";
@@ -64,46 +65,25 @@ export function JourneyLanding() {
   }
 
   return (
-    <div className="flex flex-col gap-6 pb-24">
-      <JourneyProgressHeader journey={journey} />
-      <QuestCompleteBanner journey={journey} />
-      <JourneyMap
-        nodes={journey.nodes}
-        extendedNodes={journey.extendedNodes}
-        showExtendedMarkers={journey.showExtendedMarkers}
-        currentNodeId={journey.currentNode.id}
-        nextNodeId={journey.nextNode?.id ?? null}
-        progressToNext={journey.progressToNext}
-        teamDistanceKm={journey.teamDistanceKm}
-      />
-      <PersonalStatsStrip journey={journey} />
-      <LeaderboardPreview journey={journey} />
-      <div className="flex flex-wrap gap-3 text-sm">
-        <Link
-          href={`/app/challenges/${challenge.id}`}
-          className="text-primary font-medium underline-offset-4 hover:underline"
-        >
-          Challenge details & runs
-        </Link>
-        <Link
-          href={`/app/feed?challengeId=${challenge.id}`}
-          className="text-primary font-medium underline-offset-4 hover:underline"
-        >
-          Team feed
-        </Link>
-        <Link
-          href="/app/leaderboards"
-          className="text-primary font-medium underline-offset-4 hover:underline"
-        >
-          Leaderboards
-        </Link>
-        <Link
-          href="/app/challenges"
-          className="text-muted-foreground underline-offset-4 hover:underline"
-        >
-          All challenges
-        </Link>
-      </div>
-    </div>
+    <JourneyLocationBackground
+      imageUrl={journey.currentNode.imageUrl}
+      nodeName={journey.currentNode.name}
+    >
+      <section className="journey-main-panel flex flex-col gap-6">
+          <JourneyProgressHeader journey={journey} />
+          <QuestCompleteBanner journey={journey} />
+          <JourneyMap
+            nodes={journey.nodes}
+            extendedNodes={journey.extendedNodes}
+            showExtendedMarkers={journey.showExtendedMarkers}
+            currentNodeId={journey.currentNode.id}
+            nextNodeId={journey.nextNode?.id ?? null}
+            progressToNext={journey.progressToNext}
+            teamDistanceKm={journey.teamDistanceKm}
+          />
+          <PersonalStatsStrip journey={journey} />
+          <LeaderboardPreview journey={journey} />
+      </section>
+    </JourneyLocationBackground>
   );
 }
