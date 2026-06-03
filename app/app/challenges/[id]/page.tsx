@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 
 import { ChallengeCard } from "@/features/challenges/components/challenge-card";
@@ -47,17 +46,9 @@ export default async function ChallengeDetailPage({
 
   return (
     <main className="flex min-h-dvh flex-col gap-6 pb-6">
-      <div>
-        <Link
-          href="/app"
-          className="text-muted-foreground text-sm underline-offset-4 hover:underline"
-        >
-          ← All challenges
-        </Link>
-        <h1 className="mt-2 text-2xl font-semibold tracking-tight">
-          Challenge detail
-        </h1>
-      </div>
+      <header>
+        <h1 className="text-2xl font-semibold tracking-tight">Challenge</h1>
+      </header>
 
       <ChallengeCard challenge={challenge} />
 

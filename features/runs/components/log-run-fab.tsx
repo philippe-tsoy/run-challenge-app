@@ -18,7 +18,7 @@ export function LogRunFab({ challengeId }: LogRunFabProps) {
 
   return (
     <Button
-      className="fixed right-4 bottom-6 z-40 h-14 min-h-14 rounded-full px-5 shadow-lg"
+      className="fixed right-4 bottom-[calc(4.5rem+env(safe-area-inset-bottom,0px))] z-50 h-14 min-h-14 rounded-full px-5 shadow-lg"
       onClick={() => setActiveModal("quick-add-run")}
       aria-label="Log a run"
     >

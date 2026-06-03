@@ -59,7 +59,7 @@ export function InstallPrompt() {
   }
 
   return (
-    <div className="bg-card fixed right-4 bottom-24 z-40 max-w-xs rounded-xl border p-4 shadow-lg">
+    <div className="bg-card fixed right-4 bottom-[calc(5.5rem+env(safe-area-inset-bottom,0px))] z-40 max-w-xs rounded-xl border p-4 shadow-lg">
       <p className="font-medium">Install Run Challenge</p>
       <p className="text-muted-foreground mt-1 text-sm">
         Add the app to your home screen for quick access on runs.

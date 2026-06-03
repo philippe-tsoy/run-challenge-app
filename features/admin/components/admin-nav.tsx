@@ -21,12 +21,6 @@ export function AdminNav() {
           {link.label}
         </Link>
       ))}
-      <Link
-        href="/app"
-        className="text-muted-foreground hover:text-foreground ml-auto text-sm underline-offset-4 hover:underline"
-      >
-        ← App
-      </Link>
     </nav>
   );
 }
