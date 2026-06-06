@@ -5,6 +5,10 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { usePendingRuns } from "@/features/offline/hooks/use-pending-runs";
 import { useRuns } from "@/features/runs/hooks/use-runs";
+import {
+  formatDurationMinSec,
+  formatPaceMinPerKm,
+} from "@/lib/format/run-metrics";
 import { computePaceMinPerKm } from "@/lib/validators/run";
 
 type RunListProps = {
@@ -56,10 +60,11 @@ export function RunList({ challengeId, userId }: RunListProps) {
               Pending sync
             </p>
             <p className="mt-1 font-medium">
-              {pending.distanceKm.toFixed(2)} km · {pending.durationMin} min
+              {pending.distanceKm.toFixed(2)} km ·{" "}
+              {formatDurationMinSec(pending.durationMin)}
             </p>
             <p className="text-muted-foreground mt-1 text-sm">
-              {pace.toFixed(2)} min/km · queued{" "}
+              {formatPaceMinPerKm(pace)} · queued{" "}
               {new Date(pending.queuedAt).toLocaleString()}
             </p>
           </article>
@@ -78,10 +83,10 @@ export function RunList({ challengeId, userId }: RunListProps) {
             <div className="flex items-start justify-between gap-3">
               <div>
                 <p className="font-medium">
-                  {run.distanceKm.toFixed(2)} km · {run.durationMin} min
+                  {run.distanceKm.toFixed(2)} km · {formatDurationMinSec(run.durationMin)}
                 </p>
                 <p className="text-muted-foreground mt-1 text-sm">
-                  {pace.toFixed(2)} min/km · @{run.user.username}
+                  {formatPaceMinPerKm(pace)} · @{run.user.username}
                 </p>
               </div>
               {!run.isValid ? (

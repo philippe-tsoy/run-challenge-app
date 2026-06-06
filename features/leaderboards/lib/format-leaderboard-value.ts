@@ -1,4 +1,5 @@
 import { RANKING_MAP } from "@/features/challenges/lib/ranking-types";
+import { formatPaceMinPerKm } from "@/lib/format/run-metrics";
 import type { LeaderboardMode } from "@/lib/types/leaderboard";
 
 export function formatLeaderboardValue(
@@ -9,7 +10,7 @@ export function formatLeaderboardValue(
   const unit = RANKING_MAP[mode]?.unit ?? "";
 
   if (mode === "average_pace" || mode === "best_pace") {
-    return `${safeValue.toFixed(2)} ${unit}`;
+    return formatPaceMinPerKm(safeValue);
   }
 
   if (mode === "run_count" || mode === "streak" || mode === "longest_streak") {

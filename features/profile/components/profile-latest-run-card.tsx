@@ -1,5 +1,9 @@
 import Link from "next/link";
 
+import {
+  formatDurationMinSec,
+  formatPaceMinPerKm,
+} from "@/lib/format/run-metrics";
 import type { RunDTO } from "@/lib/types/run";
 import { computePaceMinPerKm } from "@/lib/validators/run";
 
@@ -17,11 +21,12 @@ export function ProfileLatestRunCard({ run }: ProfileLatestRunCardProps) {
           <div className="flex items-start justify-between gap-3">
             <div>
               <p className="font-medium">
-                {run.distanceKm.toFixed(2)} km · {run.durationMin} min
+                {run.distanceKm.toFixed(2)} km · {formatDurationMinSec(run.durationMin)}
               </p>
               <p className="text-muted-foreground mt-1 text-sm">
-                {computePaceMinPerKm(run.distanceKm, run.durationMin).toFixed(2)}{" "}
-                min/km
+                {formatPaceMinPerKm(
+                  computePaceMinPerKm(run.distanceKm, run.durationMin),
+                )}
               </p>
             </div>
             <div className="flex shrink-0 flex-col items-end gap-1">

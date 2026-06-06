@@ -3,6 +3,10 @@ import Link from "next/link";
 import { FeedMilestoneImage } from "@/features/feed/components/feed-milestone-image";
 import { FeedRunSocial } from "@/features/feed/components/feed-run-social";
 import { FEED_EVENT_TYPES } from "@/features/feed/types/feed-event";
+import {
+  formatDurationMinSec,
+  formatPaceMinPerKm,
+} from "@/lib/format/run-metrics";
 import type { FeedEventDTO } from "@/lib/types/feed";
 
 type FeedEventCardProps = {
@@ -55,12 +59,12 @@ export function FeedEventCard({
       const durationMin = Number(payload.durationMin ?? payload.duration_min ?? 0);
       const pace = Number(payload.paceMinPerKm ?? 0);
       title = `${actorLabel(event)} logged a run`;
-      description = `${distanceKm.toFixed(2)} km in ${durationMin} min (${pace.toFixed(2)} min/km)`;
+      description = `${distanceKm.toFixed(2)} km in ${formatDurationMinSec(durationMin)} (${formatPaceMinPerKm(pace)})`;
       break;
     }
     case FEED_EVENT_TYPES.RUN_UPDATED:
       title = `${actorLabel(event)} updated a run`;
-      description = `${Number(payload.distanceKm ?? payload.distance_km ?? 0).toFixed(2)} km · ${Number(payload.durationMin ?? payload.duration_min ?? 0)} min`;
+      description = `${Number(payload.distanceKm ?? payload.distance_km ?? 0).toFixed(2)} km · ${formatDurationMinSec(Number(payload.durationMin ?? payload.duration_min ?? 0))}`;
       break;
     case FEED_EVENT_TYPES.RUN_DELETED:
       title = `${actorLabel(event)} deleted a run`;
