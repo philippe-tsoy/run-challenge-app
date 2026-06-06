@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 const tabs = [
   {
     href: "/app/leaderboards",
-    label: "Boards",
+    label: "Ranking",
     icon: Trophy,
     isActive: (pathname: string) => pathname.startsWith("/app/leaderboards"),
   },
