@@ -88,8 +88,7 @@ as $$
     join runs r on r.user_id = p.id
     where r.challenge_id = p_challenge_id
     and r.is_valid = true
-    group by p.id, p.username
-    having sum(r.distance_km) >= 10;
+    group by p.id, p.username;
 $$;
 
 create or replace function leaderboard_best_pace(p_challenge_id uuid)

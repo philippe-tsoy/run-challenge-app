@@ -125,11 +125,6 @@ export const RANKING_TYPES: RankingType[] = [
 
     direction: "asc",
 
-    minimumQualification: {
-      type: "distance",
-      value: 10,
-    },
-
     unit: "min/km",
 
     awardCode: "PACE_KING",

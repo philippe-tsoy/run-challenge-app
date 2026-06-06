@@ -113,7 +113,6 @@ $$;
 
 -- =====================================================
 -- USER AVERAGE PACE
--- QUALIFICATION: 10 KM TOTAL
 -- =====================================================
 
 create or replace function user_average_pace(
@@ -126,7 +125,7 @@ stable
 as $$
     select
         case
-            when sum(distance_km) < 10 then null
+            when coalesce(sum(distance_km), 0) <= 0 then null
             else round(
                 sum(duration_min)::numeric
                 / sum(distance_km),
@@ -388,8 +387,7 @@ as $$
         on p.id = r.user_id
     where r.challenge_id = p_challenge_id
     and r.is_valid = true
-    group by p.id,p.username
-    having sum(distance_km) >= 10;
+    group by p.id,p.username;
 $$;
 
 -- =====================================================
